@@ -103,7 +103,7 @@ class TestLexer(TestCase):
 class TestParser(TestCase):
 
     document_str = '\n'.join([
-        'SPDXVersion: SPDX-1.2',
+        'SPDXVersion: SPDX-2.1',
         'DataLicense: CC0-1.0',
         'DocumentComment: <text>Sample Comment</text>'
     ])
@@ -167,7 +167,7 @@ class TestParser(TestCase):
         document, error = self.p.parse(self.complete_str)
         assert document is not None
         assert not error
-        assert document.version == Version(major=1, minor=2)
+        assert document.version == Version(major=2, minor=1)
         assert document.data_license.identifier == 'CC0-1.0'
         assert document.comment == 'Sample Comment'
 

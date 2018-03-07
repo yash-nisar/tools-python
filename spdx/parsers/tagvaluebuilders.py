@@ -85,7 +85,7 @@ class DocBuilder(object):
             else:
                 vers = version.Version(major=int(m.group(1)),
                                        minor=int(m.group(2)))
-                if vers == version.Version(major=1, minor=2):
+                if vers == version.Version(major=2, minor=1):
                     doc.version = vers
                     return True
                 else:

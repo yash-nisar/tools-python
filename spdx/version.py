@@ -28,7 +28,7 @@ class Version(object):
     """
     VERS_STR_REGEX = re.compile(r'(\d+)\.(\d+)')
 
-    def __init__(self, major=1, minor=2):
+    def __init__(self, major=2, minor=1):
         self.major = major
         self.minor = minor
 

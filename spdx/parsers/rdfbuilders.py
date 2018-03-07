@@ -39,7 +39,7 @@ class DocBuilder(object):
         Raise exceptions:
         - SPDXValueError if malformed value,
         - CardinalityError if already defined,
-        - IncompatibleVersionError if not 1.2.
+        - IncompatibleVersionError if not 2.1.
         """
         # FIXME: relax version supported
         if not self.doc_version_set:
@@ -52,7 +52,7 @@ class DocBuilder(object):
                                        minor=int(m.group(2)))
 
                 # FIXME: we can deal with newer versions too
-                if vers == version.Version(major=1, minor=2):
+                if vers == version.Version(major=2, minor=1):
                     doc.version = vers
                     return True
                 else:

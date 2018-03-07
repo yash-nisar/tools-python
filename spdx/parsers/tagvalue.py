@@ -1117,7 +1117,7 @@ class Parser(object):
         except IncompatibleVersionError:
             self.error = True
             self.logger.log(
-                'SPDXVersion must be SPDX-1.2 found {0}.'.format(value))
+                'SPDXVersion must be SPDX-2.1 found {0}.'.format(value))
 
     def p_spdx_version_2(self, p):
         """spdx_version : DOC_VERSION error"""
