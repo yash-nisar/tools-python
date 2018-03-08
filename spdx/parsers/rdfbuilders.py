@@ -79,6 +79,18 @@ class DocBuilder(object):
         else:
             raise CardinalityError('Document::License')
 
+    def set_doc_name(self, doc, name):
+        """
+        Sets the document name.
+        Raises CardinalityError if already defined.
+        """
+        if not self.doc_name_set:
+            doc.name = name
+            self.doc_name_set = True
+            return True
+        else:
+            raise CardinalityError('Document::Name')
+
     def set_doc_comment(self, doc, comment):
         """Sets document comment, Raises CardinalityError if
         comment already set.
@@ -95,6 +107,7 @@ class DocBuilder(object):
         """
         # FIXME: this state does not make sense
         self.doc_version_set = False
+        self.doc_name_set = False
         self.doc_comment_set = False
         self.doc_data_lics_set = False
 
