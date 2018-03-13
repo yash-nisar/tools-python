@@ -10,6 +10,7 @@ if __name__ == '__main__':
     from spdx.document import Document, License, LicenseConjunction, ExtractedLicense
     from spdx.version import Version
     from spdx.creationinfo import Person
+    from spdx.external_document_ref import ExternalDocumentRef
     from spdx.review import Review
     from spdx.package import Package
     from spdx.file import File, FileType
@@ -18,8 +19,15 @@ if __name__ == '__main__':
 
     doc = Document()
     doc.version = Version(1, 2)
+    doc.name = 'Sample_Document-V2.1'
     doc.comment = 'Example Document'
     doc.data_license = License.from_identifier('CC0-1.0')
+    ext_doc_ref = ExternalDocumentRef(
+        'DocumentRef-spdx-tool-2.1',
+        'https://spdx.org/spdxdocs/spdx-tools-v2.1-3F2504E0-4F89-41D3-9A0C-0305E82C3301',
+    )
+    ext_doc_ref.check_sum = Algorithm('SHA1', 'c537c5d99eca5333f23491d47ededd083fefb7ad')
+    doc.ext_document_references.append(ext_doc_ref)
     doc.creation_info.add_creator(Person('Alice', 'alice@example.com'))
     doc.creation_info.set_created_now()
     review = Review(Person('Joe', None))

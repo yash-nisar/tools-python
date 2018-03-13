@@ -17,6 +17,7 @@ from __future__ import unicode_literals
 from functools import total_ordering
 
 from spdx import config
+from spdx.external_document_ref import ExternalDocumentRef
 
 
 def _add_parens(required, text):
@@ -190,6 +191,8 @@ class Document(object):
     - version: Spec version. Mandatory, one - Type: Version.
     - data_license: SPDX-Metadata license. Mandatory, one. Type: License.
     - name: Name of the document. Mandatory, one. Type: str.
+    - ext_document_references: External SPDX documents referenced within the
+        given SPDX document. Optional, one or many. Type: ExternalDocumentRef
     - comment: Comments on the SPDX file, optional one. Type: str
     - creation_info: SPDX file creation info. Mandatory, one. Type: CreationInfo
     - package: Package described by this document. Mandatory, one. Type: Package
@@ -206,6 +209,7 @@ class Document(object):
         self.version = version
         self.data_license = data_license
         self.name = name
+        self.ext_document_references = []
         self.comment = comment
         self.creation_info = CreationInfo()
         self.package = package
@@ -217,6 +221,9 @@ class Document(object):
 
     def add_extr_lic(self, lic):
         self.extracted_licenses.append(lic)
+
+    def add_ext_document_reference(self, ext_doc_ref):
+        self.ext_document_references.append(ext_doc_ref)
 
     @property
     def files(self):
@@ -241,6 +248,7 @@ class Document(object):
         return (self.validate_version(messages)
             and self.validate_data_lics(messages)
             and self.validate_name(messages)
+            and self.validate_ext_document_references(messages)
             and self.validate_creation_info(messages)
             and self.validate_package(messages)
             and self.validate_extracted_licenses(messages)
@@ -281,6 +289,21 @@ class Document(object):
             return False
         else:
             return True
+
+    def validate_ext_document_references(self, messages=None):
+        # FIXME: messages should be returned
+        messages = messages if messages is not None else []
+
+        valid = True
+        for doc in self.ext_document_references:
+            if isinstance(doc, ExternalDocumentRef):
+                valid = doc.validate(messages) and valid
+            else:
+                messages.append(
+                    'External document references must be of the type '
+                    'spdx.document.ExternalDocumentRef and not ' + type(doc))
+                valid = False
+        return valid
 
     def validate_reviews(self, messages=None):
         # FIXME: messages should be returned

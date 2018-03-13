@@ -41,6 +41,8 @@ ERROR_MESSAGES = {
     'DOC_VERSION_VALUE': 'Invalid SPDXVersion \'{0}\' must be SPDX-M.N where M and N are numbers. Line: {1}',
     'DOC_VERSION_VALUE_TYPE': 'Invalid SPDXVersion value, must be SPDX-M.N where M and N are numbers. Line: {0}',
     'DOC_NAME_VALUE': 'DocumentName must be single line of text, line: {0}',
+    'EXT_DOC_REF_VALUE': 'ExternalDocumentRef must contain External Document ID, SPDX Document URI and Checksum'
+                         'in the standard format, line:{0}.',
     'DOC_COMMENT_VALUE_TYPE': 'DocumentComment value must be free form text between <text></text> tags, line:{0}',
     'REVIEWER_VALUE_TYPE': 'Invalid Reviewer value must be a Person, Organization or Tool. Line: {0}',
     'CREATOR_VALUE_TYPE': 'Invalid Reviewer value must be a Person, Organization or Tool. Line: {0}',
@@ -109,6 +111,7 @@ class Parser(object):
         """attrib : spdx_version
                   | data_lics
                   | doc_name
+                  | ext_doc_ref
                   | doc_comment
                   | creator
                   | created
@@ -1117,6 +1120,26 @@ class Parser(object):
         """doc_name : DOC_NAME error"""
         self.error = True
         msg = ERROR_MESSAGES['DOC_NAME_VALUE'].format(p.lineno(1))
+        self.logger.log(msg)
+
+    def p_ext_doc_refs_1(self, p):
+        """ext_doc_ref : EXT_DOC_REF DOC_REF_ID DOC_URI EXT_DOC_REF_CHKSUM"""
+        if six.PY2:
+            doc_ref_id = p[2].decode(encoding='utf-8')
+            doc_uri = p[3].decode(encoding='utf-8')
+            ext_doc_chksum = p[4].decode(encoding='utf-8')
+        else:
+            doc_ref_id = p[2]
+            doc_uri = p[3]
+            ext_doc_chksum = p[4]
+
+        self.builder.add_ext_doc_refs(self.document, doc_ref_id, doc_uri,
+                                      ext_doc_chksum)
+
+    def p_ext_doc_refs_2(self, p):
+        """ext_doc_ref : EXT_DOC_REF error"""
+        self.error = True
+        msg = ERROR_MESSAGES['EXT_DOC_REF_VALUE'].format(p.lineno(1))
         self.logger.log(msg)
 
     def p_spdx_version_1(self, p):

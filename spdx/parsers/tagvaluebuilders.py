@@ -21,6 +21,7 @@ from six import string_types
 from spdx import checksum
 from spdx import creationinfo
 from spdx import document
+from spdx import external_document_ref
 from spdx import file
 from spdx import package
 from spdx import review
@@ -141,6 +142,38 @@ class DocBuilder(object):
         self.doc_name_set = False
         self.doc_comment_set = False
         self.doc_data_lics_set = False
+
+
+class ExternalDocumentRefBuilder(object):
+
+    def set_ext_doc_id(self, doc, ext_doc_id):
+        """
+        Sets the `external_document_id` attribute of the `ExternalDocumentRef`
+        object.
+        """
+        doc.add_ext_document_reference(
+            external_document_ref.ExternalDocumentRef(
+                external_document_id=ext_doc_id))
+
+    def set_spdx_doc_uri(self, doc, spdx_doc_uri):
+        """
+        Sets the `spdx_document_uri` attribute of the `ExternalDocumentRef`
+        object.
+        """
+        doc.ext_document_references[-1].spdx_document_uri = spdx_doc_uri
+
+    def set_chksum(self, doc, chksum):
+        """
+        Sets the `check_sum` attribute of the `ExternalDocumentRef`
+        object.
+        """
+        doc.ext_document_references[-1].check_sum = checksum_from_sha1(
+            chksum)
+
+    def add_ext_doc_refs(self, doc, ext_doc_id, spdx_doc_uri, chksum):
+        self.set_ext_doc_id(doc, ext_doc_id)
+        self.set_spdx_doc_uri(doc, spdx_doc_uri)
+        self.set_chksum(doc, chksum)
 
 
 class EntityBuilder(object):
@@ -960,7 +993,8 @@ class LicenseBuilder(object):
 
 
 class Builder(DocBuilder, CreationInfoBuilder, EntityBuilder, ReviewBuilder,
-              PackageBuilder, FileBuilder, LicenseBuilder):
+              PackageBuilder, FileBuilder, LicenseBuilder,
+              ExternalDocumentRefBuilder):
 
     """SPDX document builder."""
 
