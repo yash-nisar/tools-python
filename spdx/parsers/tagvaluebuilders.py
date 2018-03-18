@@ -109,6 +109,21 @@ class DocBuilder(object):
         else:
             raise CardinalityError('Document::DataLicense')
 
+    def set_doc_spdx_id(self, doc, doc_spdx_id_line):
+        """Sets the document SPDX Identifier.
+        Raises value error if malformed value, CardinalityError
+        if already defined.
+        """
+        if not self.doc_spdx_id_set:
+            self.doc_spdx_id_set = True
+            if doc_spdx_id_line != 'SPDXRef-DOCUMENT':
+                raise SPDXValueError('Document::SPDX Identifier')
+            else:
+                doc.doc_spdx_id = doc_spdx_id_line
+                return True
+        else:
+            raise CardinalityError('Document::SPDX Identifier')
+
     def set_doc_name(self, doc, name):
         """Sets the document name.
         Raises CardinalityError if already defined.
@@ -139,6 +154,7 @@ class DocBuilder(object):
         """Resets the state to allow building new documents"""
         # FIXME: this state does not make sense
         self.doc_version_set = False
+        self.doc_spdx_id_set = False
         self.doc_name_set = False
         self.doc_comment_set = False
         self.doc_data_lics_set = False

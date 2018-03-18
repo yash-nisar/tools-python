@@ -190,6 +190,8 @@ class Document(object):
     Represent an SPDX document with these fields:
     - version: Spec version. Mandatory, one - Type: Version.
     - data_license: SPDX-Metadata license. Mandatory, one. Type: License.
+    - doc_spdx_id: SPDX Identifier  for the document to refer to itself in
+        relationship to other elements. Mandatory, one. Type: str.
     - name: Name of the document. Mandatory, one. Type: str.
     - ext_document_references: External SPDX documents referenced within the
         given SPDX document. Optional, one or many. Type: ExternalDocumentRef
@@ -202,12 +204,13 @@ class Document(object):
       Type: Review.
     """
 
-    def __init__(self, version=None, data_license=None, name=None, comment=None,
-                 package=None):
+    def __init__(self, version=None, data_license=None, doc_spdx_id=None,
+                 name=None, comment=None, package=None):
         # avoid recursive impor
         from spdx.creationinfo import CreationInfo
         self.version = version
         self.data_license = data_license
+        self.doc_spdx_id = doc_spdx_id
         self.name = name
         self.ext_document_references = []
         self.comment = comment
@@ -247,6 +250,7 @@ class Document(object):
 
         return (self.validate_version(messages)
             and self.validate_data_lics(messages)
+            and self.validate_doc_spdx_id(messages)
             and self.validate_name(messages)
             and self.validate_ext_document_references(messages)
             and self.validate_creation_info(messages)
@@ -278,6 +282,21 @@ class Document(object):
         else:
             # FIXME: REALLY? what if someone wants to use something else?
             messages.append('Document data license must be CC0-1.0.')
+            return False
+
+    def validate_doc_spdx_id(self, messages=None):
+        # FIXME: messages should be returned
+        messages = messages if messages is not None else []
+
+        if self.doc_spdx_id is None:
+            messages.append('Document has no SPDX Identifier.')
+            return False
+
+        if self.doc_spdx_id == 'SPDXRef-DOCUMENT':
+            return True
+        else:
+            messages.append('Document SPDX Identifier must be '
+                            'SPDXRef-DOCUMENT.')
             return False
 
     def validate_name(self, messages=None):

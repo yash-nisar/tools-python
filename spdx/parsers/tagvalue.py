@@ -40,6 +40,7 @@ ERROR_MESSAGES = {
     'DOC_LICENSE_VALUE_TYPE': 'DataLicense must be CC0-1.0, line: {0}',
     'DOC_VERSION_VALUE': 'Invalid SPDXVersion \'{0}\' must be SPDX-M.N where M and N are numbers. Line: {1}',
     'DOC_VERSION_VALUE_TYPE': 'Invalid SPDXVersion value, must be SPDX-M.N where M and N are numbers. Line: {0}',
+    'DOC_SPDX_ID_VALUE': 'Invalid SPDXID value, SPDXID must be SPDXRef-DOCUMENT, line: {0}',
     'DOC_NAME_VALUE': 'DocumentName must be single line of text, line: {0}',
     'EXT_DOC_REF_VALUE': 'ExternalDocumentRef must contain External Document ID, SPDX Document URI and Checksum'
                          'in the standard format, line:{0}.',
@@ -110,6 +111,7 @@ class Parser(object):
     def p_attrib(self, p):
         """attrib : spdx_version
                   | data_lics
+                  | doc_spdx_id
                   | doc_name
                   | ext_doc_ref
                   | doc_comment
@@ -1104,6 +1106,21 @@ class Parser(object):
         self.error = True
         msg = ERROR_MESSAGES['DOC_LICENSE_VALUE_TYPE'].format(p.lineno(1))
         self.logger.log(msg)
+
+    def p_doc_spdx_id(self, p):
+        """doc_spdx_id : DOC_SPDX_ID LINE"""
+        try:
+            if six.PY2:
+                value = p[2].decode(encoding='utf-8')
+            else:
+                value = p[2]
+            self.builder.set_doc_spdx_id(self.document, value)
+        except SPDXValueError:
+            self.error = True
+            msg = ERROR_MESSAGES['DOC_SPDX_ID_VALUE'].format(p.lineno(2))
+            self.logger.log(msg)
+        except CardinalityError:
+            self.more_than_one_error('SPDXID', p.lineno(1))
 
     def p_doc_name_1(self, p):
         """doc_name : DOC_NAME LINE"""
