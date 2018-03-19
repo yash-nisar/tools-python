@@ -22,5 +22,6 @@ if __name__ == '__main__':
             print 'Creators : '
             for creator in document.creation_info.creators:
                 print creator.name
+            print document.package.spdx_id
         else:
             print 'Errors encountered while parsing'

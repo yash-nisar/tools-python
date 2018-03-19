@@ -143,6 +143,7 @@ def write_package(package, out):
     write_value('PackageName', package.name, out)
     if package.has_optional_field('version'):
         write_value('PackageVersion', package.version, out)
+    write_value('SPDXID', package.spdx_id, out)
     write_value('PackageDownloadLocation', package.download_location, out)
 
     if package.has_optional_field('summary'):

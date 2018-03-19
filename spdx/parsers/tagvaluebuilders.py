@@ -110,7 +110,7 @@ class DocBuilder(object):
             raise CardinalityError('Document::DataLicense')
 
     def set_doc_spdx_id(self, doc, doc_spdx_id_line):
-        """Sets the document SPDX Identifier.
+        """Sets the Package SPDX Identifier.
         Raises value error if malformed value, CardinalityError
         if already defined.
         """
@@ -400,6 +400,7 @@ class PackageBuilder(object):
         self.package_set = False
         self.package_vers_set = False
         self.package_file_name_set = False
+        self.package_spdx_id_set = False
         self.package_supplier_set = False
         self.package_originator_set = False
         self.package_down_location_set = False
@@ -453,6 +454,20 @@ class PackageBuilder(object):
             return True
         else:
             raise CardinalityError('Package::FileName')
+
+    def set_pkg_spdx_id(self, doc, spdx_id):
+        """Sets the package , if not already set.
+        spdx_id - Any string.
+        Raises CardinalityError if already has an spdx_id.
+        Raises OrderError if no pacakge previously defined.
+        """
+        self.assert_package_exists()
+        if not self.pkg_spdx_id_set:
+            self.pkg_spdx_id_set = True
+            doc.package.spdx_id = spdx_id
+            return True
+        else:
+            raise CardinalityError('Package::SPDX Identifier')
 
     def set_pkg_supplier(self, doc, entity):
         """Sets the package supplier, if not already set.

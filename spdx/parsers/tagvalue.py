@@ -53,6 +53,8 @@ ERROR_MESSAGES = {
     'PACKAGE_NAME_VALUE': 'PackageName must be single line of text, line: {0}',
     'PKG_VERSION_VALUE': 'PackageVersion must be single line of text, line: {0}',
     'PKG_FILE_NAME_VALUE': 'PackageFileName must be single line of text, line: {0}',
+    'PKG_SPDX_ID_VALUE': 'Invalid SPDXID value, SPDXID must be of the format SPDXRef-[idstring] where [idstring] is '
+                         'a unique string containing letters, numbers, ".","-"., line: {0}',
     'PKG_SUPPL_VALUE': 'PackageSupplier must be Organization, Person or NOASSERTION, line: {0}',
     'PKG_ORIG_VALUE': 'PackageOriginator must be Organization, Person or NOASSERTION, line: {0}',
     'PKG_DOWN_VALUE': 'PackageDownloadLocation must be a url or NONE or NOASSERTION, line: {0}',
@@ -123,6 +125,7 @@ class Parser(object):
                   | review_date
                   | review_comment
                   | package_name
+                  | pkg_spdx_id
                   | package_version
                   | pkg_down_location
                   | pkg_home
@@ -998,6 +1001,21 @@ class Parser(object):
         self.error = True
         msg = ERROR_MESSAGES['PACKAGE_NAME_VALUE'].format(p.lineno(1))
         self.logger.log(msg)
+
+    def p_package_spdx_id(self, p):
+        """pkg_spdx_id : PKG_SPDX_ID LINE"""
+        try:
+            if six.PY2:
+                value = p[2].decode(encoding='utf-8')
+            else:
+                value = p[2]
+            self.builder.set_pkg_spdx_id(self.document, value)
+        except SPDXValueError:
+            self.error = True
+            msg = ERROR_MESSAGES['PKG_SPDX_ID_VALUE'].format(p.lineno(2))
+            self.logger.log(msg)
+        except CardinalityError:
+            self.more_than_one_error('SPDXID', p.lineno(1))
 
     def p_reviewer_1(self, p):
         """reviewer : REVIEWER entity"""

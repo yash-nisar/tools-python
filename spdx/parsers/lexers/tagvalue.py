@@ -87,7 +87,8 @@ class Lexer(object):
     tokens = ['TEXT', 'TOOL_VALUE', 'UNKNOWN_TAG',
               'ORG_VALUE', 'PERSON_VALUE',
               'DATE', 'LINE', 'CHKSUM', 'DOC_REF_ID',
-              'DOC_URI', 'EXT_DOC_REF_CHKSUM'] + list(reserved.values())
+              'DOC_URI', 'EXT_DOC_REF_CHKSUM',
+              'PKG_SPDX_ID'] + list(reserved.values())
 
     def t_text(self, t):
         r':\s*<text>'
@@ -127,6 +128,11 @@ class Lexer(object):
 
     def t_EXT_DOC_REF_CHKSUM(self, t):
         r'\s*SHA1:\s*[a-f0-9]{40,40}'
+        t.value = t.value[1:].strip()
+        return t
+
+    def t_PKG_SPDX_ID(self, t):
+        r':\s*SPDXRef-([A-Za-z0-9\+\.\-]+)'
         t.value = t.value[1:].strip()
         return t
 
